@@ -43,7 +43,7 @@ class DefaultController extends Controller
         $obj = json_decode($json);
         //echo $obj->{'link'};
         //$data= $obj->link;
-        if(($obj->link)!='23') {
+        if(empty($obj->link)) {
 
             throw $this->createNotFoundException('файл чомусь путсий');
 
