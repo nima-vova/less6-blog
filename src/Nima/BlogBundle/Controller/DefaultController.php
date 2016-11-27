@@ -24,27 +24,19 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/link/{id}", requirements={"id" = "\d+"}, defaults={"id" =1})
+     * @Route("/get")
      * @Method({"GET"})
      * @return array
      */
-    public function showGetAction($id)
+    public function showGetAction()
     {
-        /*if($id=="22") {
-            //$link=array('link' => $id);
-            //file_put_contents('less7.json',json_encode($link));
-            $response = new Response();
-            $response->setContent(file_get_contents('less7.json'));
-            $response->headers->set('Content-Type', 'application/json');
-            return $response;
-        } */
+
 
         $json=file_get_contents('less7.json');
-        $obj = json_decode($json);
-        //echo $obj->{'link'};
-        //$data= $obj->link;
-        if(empty($obj->link)) {
 
+        $test=explode(",", $json);
+       
+        if(empty($json)){
             throw $this->createNotFoundException('файл чомусь путсий');
 
         }
@@ -57,108 +49,108 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/post")
+     *@Route("/post/{id}", requirements={"id" = "\d+"}, defaults={"id" =1})
      * @Method({"POST"})
      */
-    public function showPostAction()
+    public function showPostAction($id)
     {
 
-        $request = Request::createFromGlobals();
-        $request->getPathInfo();
 
-        $name=$request->request->get('name');
-
-        $link=array('link' => $name);
-        file_put_contents('less7.json',json_encode($link));
-        $response = new Response();
-        $response->setContent(file_get_contents('less7.json'));
-        $response->headers->set('Content-Type', 'application/json');
-        return $response;
-
-        //file_put_contents('11.txt', $name);
-
-        /*
          $json=file_get_contents('less7.json');
          $obj = json_decode($json);
          //echo $obj->{'link'};
-         file_put_contents('11.txt', $obj->link);
-        */
+        $test=explode(",", $json);
+         //file_put_contents('11.txt', count($test));
 
+        if(empty($json)){
+            throw $this->createNotFoundException('файл чомусь путсий');
 
+        }
+        elseif (count($test)<$id or (($id-1)<0)) {
+            throw $this->createNotFoundException('даних під таким індексом не існує');
+        }
+        else {
+
+            $response = new Response();
+            $response->setContent($test[$id-1]);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
 
 
     }
 
     /**
-     * @Route("/put")
-     * @Method({"PUT"})
+     *@Route("/put/{id}", requirements={"id" = "\d+"}, defaults={"id" =1})
+     * @Method({"PUT","PATCH"})
      */
-    public function showPutAction()
+    public function showPutPatchAction($id)
     {
 
 
-        $request = Request::createFromGlobals();
-        $request->getPathInfo();
-
-        $name=$request->request->get('name');
-
-        //$name = json_decode($request->getContent(), true);
-
-        $link=array('link' => $name);
-        file_put_contents('less7.json',json_encode($link));
-        $response = new Response();
-        $response->setContent(file_get_contents('less7.json'));
-        $response->headers->set('Content-Type', 'application/json');
-        return $response;
-
-        //file_put_contents('11.txt', $name);
-
-        /*
-         $json=file_get_contents('less7.json');
-         $obj = json_decode($json);
-         //echo $obj->{'link'};
-         file_put_contents('11.txt', $obj->link);
-        */
 
 
+        $json=file_get_contents('less7.json');
+        $obj = json_decode($json);
+        //echo $obj->{'link'};
+        $test=explode(",", $json);
+        //file_put_contents('11.txt', count($test));
 
+        if(empty($json)){
+            throw $this->createNotFoundException('файл чомусь путсий');
 
+        }
+        elseif (count($test)<$id or (($id-1)<0)) {
+            throw $this->createNotFoundException('даних під таким індексом не існує');
+        }
+        else {
+            $request = Request::createFromGlobals();
+            $request->getPathInfo();
+
+            $name=$request->request->get('name');
+            $test[$id-1]=$name;
+
+            file_put_contents('less7.json', implode(",", $test));
+            $response = new Response();
+            $response->setContent($test[$id-1]);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
     }
 
     /**
-     * @Route("/patch")
-     * @Method({"PATCH"})
+     *@Route("/del/{id}", requirements={"id" = "\d+"}, defaults={"id" =1})
+     * @Method({"DELETE"})
      */
-    public function showPatchAction()
+    public function showDeleteAction($id)
     {
 
 
-        $request = Request::createFromGlobals();
-        $request->getPathInfo();
-
-        $name=$request->request->get('name');
-
-        //$name = json_decode($request->getContent(), true);
-
-        $link=array('link' => $name);
-        file_put_contents('less7.json',json_encode($link));
-        $response = new Response();
-        $response->setContent(file_get_contents('less7.json'));
-        $response->headers->set('Content-Type', 'application/json');
-        return $response;
-
-        //file_put_contents('11.txt', $name);
-
-        /*
-         $json=file_get_contents('less7.json');
-         $obj = json_decode($json);
-         //echo $obj->{'link'};
-         file_put_contents('11.txt', $obj->link);
-        */
 
 
+        $json=file_get_contents('less7.json');
+        $obj = json_decode($json);
+
+        $test=explode(",", $json);
 
 
+        if(empty($json)){
+            throw $this->createNotFoundException('файл чомусь путсий');
+
+        }
+        elseif (count($test)<$id or (($id-1)<0)) {
+            throw $this->createNotFoundException('даних під таким індексом не існує');
+        }
+        else {
+
+            unset($test[$id-1]);
+
+            file_put_contents('less7.json', implode(",", $test));
+            $response = new Response();
+            $response->setContent($test[$id-1]);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
     }
 
 }
