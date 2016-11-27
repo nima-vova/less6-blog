@@ -35,7 +35,7 @@ class DefaultController extends Controller
         $json=file_get_contents('less7.json');
 
         $test=explode(",", $json);
-       
+
         if(empty($json)){
             throw $this->createNotFoundException('файл чомусь путсий');
 
