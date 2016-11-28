@@ -13,5 +13,6 @@
 !var/SymfonyRequirements.php
 /vendor/
 /web/bundles/
+.idea/
 
 
