@@ -1,11 +1,10 @@
 <?php
 
 namespace Nima\BlogBundle;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class NimaGetAndPutFile
 {
-    private $fileName='less7.json';
+    private $fileName = 'less7.json';
     public $paramJson;
 
     public function nimaGetFile()
