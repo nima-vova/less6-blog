@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Nima\BlogBundle\NimaGetAndPutFile;
 
-class DefaultController extends Controller
+class NimaController extends Controller
 {
     /**
      * @Route("/")
@@ -20,69 +20,85 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/get")
+     * @Route("/posts")
      * @Method({"GET"})
      *
-     * @return array
+     * @return string
      */
-    public function showGetAction($JsonResponse)
+    public function showGetAction()
     {
         $json = new NimaGetAndPutFile();
         $json->nimaGetFile();
-        //$json=file_get_contents('less7.json');
-
         if (empty($json)) {
             throw $this->createNotFoundException('файл чомусь путсий');
         } else {
             $jsonResponse = new Response();
             $jsonResponse->setContent($json->nimaGetFile());
-            //$response->headers->set('Content-Type', 'application/json');
+
             return $jsonResponse;
         }
     }
 
     /**
-     *@Route("/post/{id}", requirements={"id" = "\d+"}, defaults={"id" =0})
-     * @Method({"POST"})
+     *@Route("/posts/{id}", requirements={"id" = "\d+"}, defaults={"id" =0})
+     * @Method({"GET"})
+     *
+     * @param int $id
+     *
+     * @return object
      */
-    public function showPostAction($id)
+    public function showGetIdAction($id)
     {
         $json = new NimaGetAndPutFile();
         $obj = json_decode($json->nimaGetFile());
-
-        //file_put_contents('11.txt', property_exists($obj, $id));
-
-         if (empty($json)) {
-             throw $this->createNotFoundException('файл чомусь путсий');
-         } elseif (empty(property_exists($obj, $id))) {
-             throw $this->createNotFoundException('даних під таким індексом не існує');
-         } else {
-             $jsonResponse = new Response();
-             $jsonResponse->setContent($obj->$id);
-
-             return $jsonResponse;
-         }
-/*
-        if(empty($json)){
+        if (empty($json)) {
             throw $this->createNotFoundException('файл чомусь путсий');
-
-        }
-        elseif (count($test)<$id or (($id-1)<0)) {
+        } elseif (empty(property_exists($obj, $id))) {
             throw $this->createNotFoundException('даних під таким індексом не існує');
-        }
-        else {
-
+        } else {
             $jsonResponse = new Response();
-            $jsonResponse->setContent($test[$id-1]);
-            //$response->headers->set('Content-Type', 'application/json');
+            $jsonResponse->setContent($obj->$id);
+
             return $jsonResponse;
         }
-*/
+    }
+    /**
+     *@Route("/posts")
+     * @Method({"POST"})
+     *
+     * @return string
+     */
+    public function showPostAction()
+    {
+        $json = new NimaGetAndPutFile();
+        $obj = json_decode($json->nimaGetFile());
+        if (empty($json)) {
+            throw $this->createNotFoundException('файл чомусь путсий');
+        } else {
+            $request = Request::createFromGlobals();
+            $request->getPathInfo();
+            $name = $request->request->get('name');
+            $coutKey = 0;
+            foreach ($obj as $key => $value) {
+                ++$coutKey;
+            }
+            $obj->$coutKey = $name;
+            $objEncode = json_encode($obj);
+            $json->nimaPutFile($objEncode);
+            $jsonResponse = new Response();
+            $jsonResponse->setContent($obj->$coutKey.' доданий до списку');
+
+            return $jsonResponse;
+        }
     }
 
     /**
-     *@Route("/post/{id}", requirements={"id" = "\d+"}, defaults={"id" =0})
+     *@Route("/posts/{id}", requirements={"id" = "\d+"}, defaults={"id" =0})
      * @Method({"PUT"})
+     *
+     * @param int $id
+     *
+     * @return object
      */
     public function showPutAction($id)
     {
@@ -95,15 +111,11 @@ class DefaultController extends Controller
         } else {
             $request = Request::createFromGlobals();
             $request->getPathInfo();
-
             $name = $request->request->get('name');
-            //$test[$id-1]=$name;
-            //$obj->$id=$name;
             foreach ($obj as $key => $value) {
                 $obj->$key = 'null';
             }
             $obj->$id = $name;
-
             $objEncode = json_encode($obj);
             $json->nimaPutFile($objEncode);
             $jsonResponse = new Response();
@@ -114,8 +126,12 @@ class DefaultController extends Controller
     }
 
     /**
-     *@Route("/post/{id}", requirements={"id" = "\d+"}, defaults={"id" =0})
+     *@Route("/posts/{id}", requirements={"id" = "\d+"}, defaults={"id" =0})
      * @Method({"PATCH"})
+     *
+     * @param int $id
+     *
+     * @return object
      */
     public function showPatchAction($id)
     {
@@ -130,7 +146,6 @@ class DefaultController extends Controller
             $request->getPathInfo();
 
             $name = $request->request->get('name');
-            //$test[$id-1]=$name;
             $obj->$id = $name;
             $objEncode = json_encode($obj);
             $json->nimaPutFile($objEncode);
@@ -144,12 +159,15 @@ class DefaultController extends Controller
     /**
      *@Route("/post/{id}", requirements={"id" = "\d+"}, defaults={"id" =0})
      * @Method({"DELETE"})
+     *
+     * @param int $id
+     *
+     * @return string
      */
     public function showDeleteAction($id)
     {
         $json = new NimaGetAndPutFile();
         $obj = json_decode($json->nimaGetFile());
-
         if (empty($json)) {
             throw $this->createNotFoundException('файл чомусь путсий');
         } elseif (empty(property_exists($obj, $id))) {
@@ -157,8 +175,6 @@ class DefaultController extends Controller
         } else {
             $request = Request::createFromGlobals();
             $request->getPathInfo();
-
-            $name = $request->request->get('name');
             unset($obj->$id);
             $objEncode = json_encode($obj);
             $json->nimaPutFile($objEncode);
